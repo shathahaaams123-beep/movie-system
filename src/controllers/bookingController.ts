@@ -1,14 +1,23 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import Booking from "../models/Booking";
 import Showtime from "../models/Showtime";
+import { AuthRequest } from "../middleware/auth.middleware";
 
-export const createBooking = async (req: Request, res: Response) => {
+export const createBooking = async (req: AuthRequest, res: Response) => {
   try {
-    const { customer, showtime, selectedSeats } = req.body;
+    const { showtime, selectedSeats } = req.body;
 
-    if (!customer || !showtime || !selectedSeats) {
+    const customer = req.user?.userId;
+
+    if (!customer) {
+      return res.status(401).json({
+        message: "User not authenticated",
+      });
+    }
+
+    if (!showtime || !selectedSeats) {
       return res.status(400).json({
-        message: "Customer, showtime and selected seats are required",
+        message: "Showtime and selected seats are required",
       });
     }
 
@@ -84,24 +93,28 @@ export const createBooking = async (req: Request, res: Response) => {
       bookingStatus: "confirmed",
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Booking created successfully",
       booking,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to create booking",
       error,
     });
   }
 };
-export const getMyBookings = async (req: Request, res: Response) => {
+
+export const getMyBookings = async (
+  req: AuthRequest,
+  res: Response
+) => {
   try {
-    const { customer } = req.params;
+    const customer = req.user?.userId;
 
     if (!customer) {
-      return res.status(400).json({
-        message: "Customer is required",
+      return res.status(401).json({
+        message: "User not authenticated",
       });
     }
 
@@ -109,21 +122,36 @@ export const getMyBookings = async (req: Request, res: Response) => {
       customer,
     }).populate("showtime");
 
-    res.status(200).json({
+    return res.status(200).json({
       bookings,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to get bookings",
       error,
     });
   }
 };
-export const getBookingById = async (req: Request, res: Response) => {
+
+export const getBookingById = async (
+  req: AuthRequest,
+  res: Response
+) => {
   try {
     const { id } = req.params;
 
-    const booking = await Booking.findById(id).populate("showtime");
+    const customer = req.user?.userId;
+
+    if (!customer) {
+      return res.status(401).json({
+        message: "User not authenticated",
+      });
+    }
+
+    const booking = await Booking.findOne({
+      _id: id,
+      customer,
+    }).populate("showtime");
 
     if (!booking) {
       return res.status(404).json({
@@ -131,21 +159,36 @@ export const getBookingById = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       booking,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to get booking",
       error,
     });
   }
 };
-export const cancelBooking = async (req: Request, res: Response) => {
+
+export const cancelBooking = async (
+  req: AuthRequest,
+  res: Response
+) => {
   try {
     const { id } = req.params;
 
-    const booking = await Booking.findById(id);
+    const customer = req.user?.userId;
+
+    if (!customer) {
+      return res.status(401).json({
+        message: "User not authenticated",
+      });
+    }
+
+    const booking = await Booking.findOne({
+      _id: id,
+      customer,
+    });
 
     if (!booking) {
       return res.status(404).json({
@@ -160,14 +203,15 @@ export const cancelBooking = async (req: Request, res: Response) => {
     }
 
     booking.bookingStatus = "cancelled";
+
     await booking.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Booking cancelled successfully",
       booking,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to cancel booking",
       error,
     });
