@@ -1,95 +1,56 @@
-import { Request, Response } from "express";
-import Movie from "../models/Movie";
-export const createMovie = async (req: Request, res: Response) => {
-  try {
-    const movie = await Movie.create(req.body);
+import { Request, Response } from 'express';
+import { Movie } from '../models/Movie';
 
-    res.status(201).json({
-      message: "Movie created successfully",
-      movie,
-    });
-  } catch (error: any) {
-    res.status(400).json({
-      message: "Failed to create movie",
-      error: error.message,
-    });
-  }
-};
-export const getMovies = async (req: Request, res: Response) => {
-  try {
-    const movies = await Movie.find();
+let movies: Movie[] = [
+  { id: "1", title: "Lupin", genre: "Crime", duration: 45, status: "Now Showing" },
+  { id: "2", title: "Waqfet Reggala", genre: "Comedy", duration: 110, status: "Now Showing" }
+];
 
-    res.status(200).json(movies);
+export const getAllMovies = async (req: Request, res: Response) => {
+  try {
+    res.status(200).json({
+      success: true,
+      data: movies
+    });
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to get movies",
-      error,
-    });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
 export const getMovieById = async (req: Request, res: Response) => {
   try {
-    const movie = await Movie.findById(req.params.id);
+    const { id } = req.params;
+    const movie = movies.find((m) => m.id === id);
 
     if (!movie) {
-      return res.status(404).json({
-        message: "Movie not found",
-      });
+      return res.status(404).json({ success: false, message: "Movie not found" });
     }
 
-    res.status(200).json(movie);
+    res.status(200).json({ success: true, data: movie });
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to get movie",
-      error,
-    });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-export const updateMovie = async (req: Request, res: Response) => {
-  try {
-    const movie = await Movie.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
 
-    if (!movie) {
-      return res.status(404).json({
-        message: "Movie not found",
-      });
+export const createMovie = async (req: Request, res: Response) => {
+  try {
+    const { title, genre, duration, status } = req.body;
+
+    if (!title || !genre || !duration) {
+      return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
 
-    res.status(200).json({
-      message: "Movie updated successfully",
-      movie,
-    });
-  } catch (error: any) {
-    res.status(400).json({
-      message: "Failed to update movie",
-      error: error.message,
-    });
-  }
-};
-export const deleteMovie = async (req: Request, res: Response) => {
-  try {
-    const movie = await Movie.findByIdAndDelete(req.params.id);
+    const newMovie: Movie = {
+      id: (movies.length + 1).toString(),
+      title,
+      genre,
+      duration: Number(duration),
+      status: status || "Now Showing"
+    };
 
-    if (!movie) {
-      return res.status(404).json({
-        message: "Movie not found",
-      });
-    }
-
-    res.status(200).json({
-      message: "Movie deleted successfully",
-    });
+    movies.push(newMovie);
+    res.status(201).json({ success: true, data: newMovie });
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to delete movie",
-      error,
-    });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
