@@ -1,28 +1,26 @@
 import { Request , Response , NextFunction } from 'express';
 
+
+
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET=process.env.JWT_SECRET || 'super_secret_key'   ;
+const JWT_SECRET=process.env.JWT_SECRET;
+if (!JWT_SECRET) {
 
 
-export interface AuthRequest extends Request{
-  
-  user ?: {
 
-    userId:string ;
+  throw new Error('JWT_SECRET is not defined in environment variables') ;
 
-    role:string ;
-  };
+
+
+
 }
 
-export const authenticate=(req: AuthRequest , res: Response , next : NextFunction) =>{
+export const authenticate=(req: Request , res: Response, next: NextFunction) => {
+  const authHeader= req.headers.authorization;
 
-  const authHeader=req.headers.authorization;
-
-  if ( !authHeader || !authHeader.startsWith( 'Bearer ') ) {
-
-    return res.status(401).json({ message: 'Access denied. No token provided.' }) ;
-
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message:'Unauthorized: No token provided'}) ;
 
   }
 
@@ -30,28 +28,38 @@ export const authenticate=(req: AuthRequest , res: Response , next : NextFunctio
 
   try {
 
-    const decoded = jwt.verify(token,JWT_SECRET) as { userId: string; role: string } ;
-    req.user=decoded ;
+    const decoded=jwt.verify(token,JWT_SECRET);
 
-    next();
+    (req as any).user = decoded;
 
-  } catch (error){
+    next() ;
 
-    return res.status(401).json({ message : 'Invalid or expired token' });
+  } catch (error) {
+    return res.status(401).json({ message:'Unauthorized: Invalid or expired token'}) ;
+
   }
+
 
 };
 
-export const authorizeRoles=(...roles: string[]) =>{
-
-  return (req: AuthRequest, res: Response , next: NextFunction) => {
-
-    if ( !req.user || !roles.includes(req.user.role) ) {
+export const authorizeRoles= (...roles: string[]) => {
+  return (req:Request , res: Response, next: NextFunction) => {
 
 
-      return res.status(403).json({ message: 'Access denied. Unauthorized role.' });
+
+    const userRole = (req as any).user?.role;
+
+    if (!userRole || !roles.includes(userRole)) {
+
+
+      return res.status(403).json({ message: 'Forbidden: Access denied' });
     }
+
     next();
 
   };
+
+
+
+  
 };
