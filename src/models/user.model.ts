@@ -3,12 +3,14 @@ import { Schema,model,Document } from 'mongoose' ;
 export interface IUser extends Document{
 
   name : string ;
+
   email : string;
+
   passwordHash : string;
 
-  role: 'admin' | 'customer';
+  role:'admin' | 'customer';
 
-  createdAt: Date;
+  createdAt:Date;
 }
 
 const userSchema=new Schema<IUser>(

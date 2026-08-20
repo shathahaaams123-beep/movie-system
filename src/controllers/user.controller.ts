@@ -2,7 +2,7 @@ import {Request , Response} from 'express' ;
 
   import bcrypt from 'bcrypt' ;
 
-import jwt from 'jsonwebtoken' ;
+   import jwt from 'jsonwebtoken' ;
 
 import {User} from '../models/user.model';
 
@@ -14,16 +14,19 @@ export const register= async (req : Request , res: Response) =>{
 
     const { name , email , password , role }= req.body ;
 
+
+
     const existingUser =await User.findOne({ email });
 
     if (existingUser) {
 
       return res.status(400).json({ message: 'Email already registered' }) ;
+
     }
 
-    const saltRounds= 10;
+    const saltRounds=10;
 
-    const passwordHash= await bcrypt.hash(password , saltRounds);
+    const passwordHash=await bcrypt.hash(password , saltRounds);
 
     const newUser= await User.create ({
       name,
@@ -38,6 +41,7 @@ export const register= async (req : Request , res: Response) =>{
     return res.status(201).json({
 
       message : 'User registered successfully',
+
       user : {
 
         id: newUser._id,
@@ -57,7 +61,7 @@ export const register= async (req : Request , res: Response) =>{
 
 export const login=async (req: Request , res: Response) =>{
   try {
-    const { email , password } =req.body;
+    const { email , password }=req.body;
 
     const user = await User.findOne({ email });
 
@@ -82,6 +86,7 @@ export const login=async (req: Request , res: Response) =>{
     return res.status(200).json({
 
       message: 'Login successful',
+
       token,
       user:{
         id: user._id,
@@ -92,6 +97,7 @@ export const login=async (req: Request , res: Response) =>{
     });
 
   } catch (error) {
+
     return res.status(500).json({ message: 'Server error', error });
   }
 };

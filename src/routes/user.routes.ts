@@ -1,15 +1,15 @@
 import { Router } from 'express';
 
-import { register, login, getProfile } from '../controllers/user.controller';
+import { register,login,getProfile } from '../controllers/user.controller';
 
 import { authenticate } from '../middleware/auth.middleware';
 
 const router=Router();
 
 
-router.post('/register', register);
+router.post('/register',register);
 
-router.post('/login', login);
+router.post('/login',login);
 
 router.get('/profile' , authenticate , getProfile);
 
