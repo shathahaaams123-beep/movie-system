@@ -1,9 +1,19 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import Booking from "../models/Booking";
-import Showtime from "../models/Showtime";
-import { AuthRequest } from "../middleware/auth.middleware";
+import Showtime from "../models/showtime.model";
 
-export const createBooking = async (req: AuthRequest, res: Response) => {
+interface BookingRequest extends Request {
+  user?: {
+    userId?: string;
+    id?: string;
+    role?: string;
+  };
+}
+
+export const createBooking = async (
+  req: BookingRequest,
+  res: Response
+) => {
   try {
     const { showtime, selectedSeats } = req.body;
 
@@ -76,7 +86,10 @@ export const createBooking = async (req: AuthRequest, res: Response) => {
     const totalBookedSeats = bookedSeats.length;
     const requestedSeats = selectedSeats.length;
 
-    if (totalBookedSeats + requestedSeats > showtimeData.totalCapacity) {
+    if (
+      totalBookedSeats + requestedSeats >
+      showtimeData.totalCapacity
+    ) {
       return res.status(400).json({
         message: "Not enough seats available",
       });
@@ -106,7 +119,7 @@ export const createBooking = async (req: AuthRequest, res: Response) => {
 };
 
 export const getMyBookings = async (
-  req: AuthRequest,
+  req: BookingRequest,
   res: Response
 ) => {
   try {
@@ -134,7 +147,7 @@ export const getMyBookings = async (
 };
 
 export const getBookingById = async (
-  req: AuthRequest,
+  req: BookingRequest,
   res: Response
 ) => {
   try {
@@ -171,7 +184,7 @@ export const getBookingById = async (
 };
 
 export const cancelBooking = async (
-  req: AuthRequest,
+  req: BookingRequest,
   res: Response
 ) => {
   try {
