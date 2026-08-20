@@ -8,10 +8,11 @@ import {
 } from "../controllers/bookingController";
 
 import { authenticate } from "../middleware/auth.middleware";
+import { validateBooking } from "../validators/booking.validator";
 
 const router = express.Router();
 
-router.post("/", authenticate, createBooking);
+router.post("/", authenticate, validateBooking, createBooking);
 
 router.get("/my", authenticate, getMyBookings);
 
