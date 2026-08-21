@@ -201,7 +201,7 @@ export const cancelBooking = async (
     const booking = await Booking.findOne({
       _id: id,
       customer,
-    });
+    }).populate("showtime");
 
     if (!booking) {
       return res.status(404).json({
@@ -212,6 +212,17 @@ export const cancelBooking = async (
     if (booking.bookingStatus === "cancelled") {
       return res.status(400).json({
         message: "Booking is already cancelled",
+      });
+    }
+    const showtimeData = booking.showtime as any;
+
+    const showtimeDateTime = new Date(
+      `${showtimeData.date}T${showtimeData.startTime}`
+    );
+
+    if (showtimeDateTime <= new Date()) {
+      return res.status(400).json({
+        message: "Cannot cancel booking after the movie has started",
       });
     }
 
