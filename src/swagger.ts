@@ -30,6 +30,10 @@ const options= {
         name: "Bookings",
         description: "Movie ticket booking operations",
       },
+      {
+       name: "Movies",
+       description: "Movie management operations",
+      },
 
     ],
     components : {
