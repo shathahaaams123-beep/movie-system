@@ -13,21 +13,21 @@ const router= Router();
  *     tags: [Users]
  *     requestBody:
  *       required: true
- *     content:
- *     application/json:
- *      schema:
- *      type: object
- *       required:
- *       - name
- *       - email
- *       - password
- *         properties:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
  *               name:
- *           type: string
- *            example: Habiba
- *            email:
- *             type: string
- *              example: habiba@example.com
+ *                 type: string
+ *                 example: Habiba
+ *               email:
+ *                 type: string
+ *                 example: habiba@example.com
  *               password:
  *                 type: string
  *                 example: Password123
@@ -49,18 +49,18 @@ router.post('/register', register);
  *       required: true
  *       content:
  *         application/json:
- *         schema:
- *         type: object
- *         required:
- *          - email
- *         - password
- *          properties:
- *            email:
- *           type: string
- *             example: habiba@example.com
- *           password:
- *           type: string
- *        example: Password123
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: habiba@example.com
+ *               password:
+ *                 type: string
+ *                 example: Password123
  *     responses:
  *       200:
  *         description: Login successful and returns token
@@ -76,12 +76,12 @@ router.post('/login', login);
  *     summary: Get logged-in user profile
  *     tags: [Users]
  *     security:
- *      - bearerAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *       description: Profile retrieved successfully
+ *         description: Profile retrieved successfully
  *       401:
- *       description: Unauthorized - Invalid or missing token
+ *         description: Unauthorized - Invalid or missing token
  */
 router.get('/profile', authenticate, getProfile);
 
