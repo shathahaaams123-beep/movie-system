@@ -1,40 +1,50 @@
 import swaggerJsdoc from "swagger-jsdoc";
 
-const options = {
-  definition: {
+const options= {
+
+  definition:{
+
     openapi: "3.0.0",
 
-    info: {
-      title: "Movie Ticket Booking System API",
+    info : {
+      title:"Movie Ticket Booking System API",
       version: "1.0.0",
-      description: "Booking API",
+
+      description: "Movie Ticket Booking API",
     },
 
-    servers: [
+    servers:[
+
       {
-        url: "http://localhost:3000",
+
+        url:"http://localhost:3000",
       },
     ],
-
     tags: [
+
+      {
+        name: "Users",
+        description: "User management and authentication operations",
+      },
       {
         name: "Bookings",
         description: "Movie ticket booking operations",
       },
-    ],
 
-    components: {
+    ],
+    components : {
+
       securitySchemes: {
         bearerAuth: {
           type: "http",
+          
           scheme: "bearer",
           bearerFormat: "JWT",
         },
       },
     },
   },
-
-  apis: ["./src/routes/bookingRoutes.ts"],
+  apis: ["./src/routes/*.ts"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
