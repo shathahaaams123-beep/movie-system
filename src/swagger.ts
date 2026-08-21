@@ -17,7 +17,7 @@ const options= {
 
       {
 
-        url:"http://localhost:3000",
+        url: "https://movie-system-production.up.railway.app",
       },
     ],
     tags: [
