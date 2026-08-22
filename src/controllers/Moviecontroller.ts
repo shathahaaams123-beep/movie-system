@@ -17,13 +17,35 @@ export const createMovie = async (req: Request, res: Response) => {
 };
 export const getMovies = async (req: Request, res: Response) => {
   try {
-    const movies = await Movie.find();
+    const { title, genre, status } = req.query;
+
+    const filter: any = {};
+
+    if (title) {
+      filter.title = { $regex: title, $options: "i" };
+    }
+
+    if (genre) {
+      filter.genre = { $regex: genre, $options: "i" };
+    }
+
+    if (status) {
+      if (status !== "Now Showing" && status !== "Coming Soon") {
+        return res.status(400).json({
+          message: "Status must be Now Showing or Coming Soon",
+        });
+      }
+
+      filter.status = status;
+    }
+
+    const movies = await Movie.find(filter);
 
     res.status(200).json(movies);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       message: "Failed to get movies",
-      error,
+      error: error.message,
     });
   }
 };

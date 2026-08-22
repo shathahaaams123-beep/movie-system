@@ -51,11 +51,35 @@ router.post("/", validateMovie, createMovie);
  * @swagger
  * /movies:
  *   get:
- *     summary: Get all movies
+ *     summary: Get movies with search and filters
  *     tags: [Movies]
+ *     parameters:
+ *       - in: query
+ *         name: title
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Search movies by title
+ *       - in: query
+ *         name: genre
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter movies by genre
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - Now Showing
+ *             - Coming Soon
+ *         description: Filter movies by status
  *     responses:
  *       200:
  *         description: Movies retrieved successfully
+ *       400:
+ *         description: Invalid filter value
  *       500:
  *         description: Failed to get movies
  */
