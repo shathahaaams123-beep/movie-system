@@ -25,7 +25,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/movies", movieRoutes);
-app.use("/showtimes", showtimeRoutes);
+app.use("/api/showtimes", showtimeRoutes);
 
 // Health check
 app.get("/", (req, res) => {
