@@ -7,7 +7,10 @@ import {
   cancelBooking,
 } from "../controllers/bookingController";
 
-import { authenticate } from "../middleware/auth.middleware";
+import {
+  authenticate,
+  authorizeRoles,
+} from "../middleware/auth.middleware";
 
 import { validateBooking } from "../validators/booking.validator";
 
@@ -38,10 +41,18 @@ const router = express.Router();
  *         description: Invalid booking data
  *       401:
  *         description: User not authenticated
+ *       403:
+ *         description: Access denied - Customer role required
  *       404:
  *         description: Showtime not found
  */
-router.post("/", authenticate, validateBooking, createBooking);
+router.post(
+  "/",
+  authenticate,
+  authorizeRoles("Customer"),
+  validateBooking,
+  createBooking
+);
 
 /**
  * @swagger
@@ -57,8 +68,15 @@ router.post("/", authenticate, validateBooking, createBooking);
  *         description: Bookings retrieved successfully
  *       401:
  *         description: User not authenticated
+ *       403:
+ *         description: Access denied - Customer role required
  */
-router.get("/my", authenticate, getMyBookings);
+router.get(
+  "/my",
+  authenticate,
+  authorizeRoles("Customer"),
+  getMyBookings
+);
 
 /**
  * @swagger
@@ -81,10 +99,17 @@ router.get("/my", authenticate, getMyBookings);
  *         description: Booking found
  *       401:
  *         description: User not authenticated
+ *       403:
+ *         description: Access denied - Customer role required
  *       404:
  *         description: Booking not found
  */
-router.get("/:id", authenticate, getBookingById);
+router.get(
+  "/:id",
+  authenticate,
+  authorizeRoles("Customer"),
+  getBookingById
+);
 
 /**
  * @swagger
@@ -109,9 +134,16 @@ router.get("/:id", authenticate, getBookingById);
  *         description: Booking is already cancelled
  *       401:
  *         description: User not authenticated
+ *       403:
+ *         description: Access denied - Customer role required
  *       404:
  *         description: Booking not found
  */
-router.patch("/:id/cancel", authenticate, cancelBooking);
+router.patch(
+  "/:id/cancel",
+  authenticate,
+  authorizeRoles("Customer"),
+  cancelBooking
+);
 
 export default router;
