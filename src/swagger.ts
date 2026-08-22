@@ -34,6 +34,10 @@ const options= {
        name: "Movies",
        description: "Movie management operations",
       },
+      {
+        name: "Showtimes",
+        description: "Movie showtime management operations",
+      },
 
     ],
     components : {
